@@ -8,6 +8,9 @@ on:
 jobs:
   frontend_build_lint_test_job:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     name: Build, lint and test job
     steps:
       - uses: actions/checkout@v4
@@ -20,3 +23,13 @@ jobs:
         run: npm run build
       - name: Lint
         run: npm run lint
+      - name: Test
+        run: npm run test:coverage
+      - name: Report Coverage
+        # Set if: always() to also generate the report if tests are failing
+        # Only works if you set `reportOnFailure: true` in your vite config as specified above
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          json-summary-path: "./coverage/coverage-summary.json"
+          json-final-path: "./coverage/coverage-final.json"
